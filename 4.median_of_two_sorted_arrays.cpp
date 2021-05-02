@@ -1,12 +1,5 @@
-
-//  1 ,3       , 4
-//  2,      5, 6, 7
-//
-//  (m + n + 1)/ 2
-//
-//  idx1 = 2
-//  idx2 = 2
-//
+// 1 3 | 5 nums1
+// 2 4 | 6  7
 #include <vector>
 
 using namespace std;
@@ -17,34 +10,32 @@ public:
     if (nums1.size() > nums2.size())
       return findMedianSortedArrays(nums2, nums1);
 
-    int m = nums1.size(), n = nums2.size(), half = (m + n + 1) / 2;
-    int l = 0, r = nums1.size();
+    int m = nums1.size(), n = nums2.size();
+    int l = 0, r = m, half = (m + n + 1) / 2;
 
     while (l <= r) {
-      int pos1 = l + (r - l) / 2;
-      int pos2 = half - pos1;
+      int mid = l + (r - l) / 2;
+      int mid2 = half - mid;
 
-      double left_1 = (pos1 == 0) ? INT_MIN : nums1[pos1 - 1];
-      double right_1 = (pos1 == m) ? INT_MAX : nums1[pos1];
+      double left_1 = mid == 0 ? INT_MIN : nums1[mid - 1]; // int_min
+      double right_1 = mid == m ? INT_MAX : nums1[mid];    // 1
 
-      double left_2 = (pos2 == 0) ? INT_MIN : nums2[pos2 - 1];
-      double right_2 = (pos2 == n) ? INT_MAX : nums2[pos2];
+      double left_2 = mid2 == 0 ? INT_MIN : nums2[mid2 - 1]; // 1
+      double right_2 = mid2 == n ? INT_MAX : nums2[mid2];    // int_max
 
-      // find separate point
-      if (right_2 >= left_1 && left_2 <= right_1) {
-        if ((m + n) % 2 == 1) { // odd element
-          return max(left_1, left_2);
-        } else { // even
-          return (max(left_1, left_2) + min(right_1, right_2)) / 2.0;
-        }
-      } else if (right_1 < left_2) {
-        // mid point too small
-        l = pos1 + 1;
+      if (right_2 >= left_1 &&
+          right_1 >= left_2) { // find the correct partition
+        if ((m + n) % 2 == 0)
+          return (max(left_2, left_1) + min(right_1, right_2)) / 2.0;
+        else
+          return max(left_2, left_1);
+      } else if (left_2 > right_1) {
+        l = mid + 1;
       } else {
-        // mid point too large
-        r = pos1 - 1;
+        r = mid - 1;
       }
     }
+
     return 0;
   }
 };
